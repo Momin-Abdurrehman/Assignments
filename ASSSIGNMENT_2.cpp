@@ -3,8 +3,8 @@
 #include <cmath>   //for exponential and log functions               //included all necessary header files
 #include <cstdlib> /*  these two for randum number  */
 #include <ctime>
-
-// Declaration/function prototype for all the functions
+// testing
+//  Declaration/function prototype for all the functions
 void pattern();
 void calculator();
 int randnum();
@@ -342,6 +342,7 @@ void game()
 void pattern2()
 {
     // did the pattern using while loop aswell hence including it in the program.
+
     int n;
     cout << "Enter the number of rows: ";
     cin >> n;
