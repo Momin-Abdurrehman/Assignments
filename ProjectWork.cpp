@@ -1,8 +1,12 @@
 #include <iostream>
-#include <ncurses.h>
+#include <cstdlib> // For rand()
+#include <ctime>   // For time()
+
 
 void display_menu();
-void waitForKeyPress();
+void waitForKeyPress(); 
+int toss_rand();
+int toss();
 
 using namespace std;
 string pak_player_names[11] ={"Babar Azam","Mohammad Rizwan","Fakhar Zaman","Iftikhar Ahmed","Shadab Khan","Imad Wasim","Shaheen Afridi","Haris Rauf","Naseem Shah","Mohammad Nawaz","Usama Mir"};
@@ -23,11 +27,11 @@ int team2_scores[10];
 
 int main()
 {
-    while(true) {
-        display_menu();
-        void waitForKeyPress();
+     srand(static_cast<unsigned>(time(0))); //cant include in function to ensure randomness
+    
+        toss();
+        waitForKeyPress();
         system("clear");
-        }
     
 }
 
@@ -58,21 +62,67 @@ void display_menu()                          //MENU
 }
 */
 
-void toss(); //it will return the toss to the play function
-void Score_board();    //team1 and team 2 array will keep updating with every turn         
+int toss() //it will return the toss to the play function
+{
+    
+    cout<<"Time for the toss!"
+        <<endl
+        <<"Press-->"<<endl<<"\t1. for Heads"<< endl<<"\t2 for tails "<<endl<<"Option: " ;//Head is 1 and tails is 0
+
+    int head_tails;
+    cin>>head_tails;
+
+    bool toss = toss_rand();  //randomly generate 1 or 0 and decide on that basis
+    if(toss)
+    {
+        cout<<"u won the toss!!"<<endl;
+        cout<<endl<<"Would you like to bat first or bowl first?"
+            <<endl<<"1. Bat"<<endl<<"2. Bowl"<<endl<<"Select an option: ";
+
+        int bat_bowl;
+        cin >> bat_bowl;
+
+        if(bat_bowl == 1){ return 1;}      //toss won, u bat first = 1
+        else if(bat_bowl ==2){return 2;}   //toss won, u bowl first = 2
+        
+    }
+    else if(!toss)
+    {
+        cout<<"opponent won the toss."<<endl;
+        bool comp_decide = toss_rand();
+        if(comp_decide){return 3;}          //toss lost, computer  bats first
+        else if(!comp_decide){return 4;}    //toss lost, computer bowls first
+    }
+
+    
 
 
-
-/*                                                                  //this will make program look better
-void waitForKeyPress() {
-    initscr();          // Initialize ncurses mode
-    noecho();           // Disable echoing of key presses
-    cbreak();           // Disable line buffering
-
-    printw("Press any key to go to the Main Menu...\n");
-    refresh();          // Refresh the screen to display the message
-    getch();            // Wait for a key press
-
-    endwin();           // End ncurses mode
 }
+
+
+
+
+
+
+
+/*
+void Score_board();    //team1 and team 2 array will keep updating with every turn     
+
+void computer_turn();
 */
+
+
+                                                          //this will make program look better
+void waitForKeyPress() {
+    cout << "Press any key to continue...\n";
+    system("read -n1"); // Waits for any key press
+}
+
+
+
+int toss_rand(){
+
+
+    // Generate a random number (0 or 1)
+    return  rand() % 2;
+}
