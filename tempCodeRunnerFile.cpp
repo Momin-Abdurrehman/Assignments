@@ -2,13 +2,15 @@
 #include <cstdlib> // For rand()
 #include <ctime>   // For time()
 #include <thread>
+#include <iomanip> // For formatting
+#include <chrono>
 using namespace std;
-
 
 void display_menu();
 void waitForKeyPress(); 
 int toss_rand();
-void toss();
+void select_gametype(int &overs);
+void toss(int &batORbowl);
 void select_user_team(string user_team[11]);
 void select_comp_team(string comp_team[11]);
 void scoreboard(int i, string pak_player_names[11], int balls, int wickets, int score, int totalscore);
@@ -16,19 +18,25 @@ void instructions();
 void copy(string x[11], string y[11]);
 void player_turn();
 void computer_turn();
+void decide_winner();
+void loading();
 
-string pak_player_names[11] ={"Babar Azam","Mohammad Rizwan","Fakhar Zaman","Iftikhar Ahmed","Shadab Khan","Imad Wasim","Shaheen Afridi","Haris Rauf","Naseem Shah","Mohammad Nawaz","Usama Mir"};
-string eng_player_names[11]= {"Jos Buttler","Dawid Malan","Alex Hales","Moeen Ali","Liam Livingstone","Ben Stokes","Sam Curran","Chris Woakes","Adil Rashid","Mark Wood","Chris Jordan"};
-string aus_player_names[11];
-string ind_player_names[11];
-string nz_player_names[11];
-string wi_player_names[11];     //ill update the other teams later
-string afg_player_names[11];    
-string sa_player_names[11];
-string sri_player_names[11];
-string ban_player_names[11];
+string pak_player_names[11] = {"Babar Azam", "Mohammad Rizwan", "Fakhar Zaman", "Iftikhar Ahmed", "Shadab Khan", "Imad Wasim", "Shaheen Afridi", "Haris Rauf", "Naseem Shah", "Mohammad Nawaz", "Usama Mir"};
+string eng_player_names[11] = {"Jos Buttler", "Dawid Malan", "Alex Hales", "Moeen Ali", "Liam Livingstone", "Ben Stokes", "Sam Curran", "Chris Woakes", "Adil Rashid", "Mark Wood", "Chris Jordan"};
+string aus_player_names[11] = {"Aaron Finch", "David Warner", "Steve Smith", "Glenn Maxwell", "Marcus Stoinis", "Mitchell Marsh", "Pat Cummins", "Mitchell Starc", "Adam Zampa", "Josh Hazlewood", "Matthew Wade"};
+string ind_player_names[11] = {"Rohit Sharma", "Virat Kohli", "KL Rahul", "Suryakumar Yadav", "Rishabh Pant", "Hardik Pandya", "Ravindra Jadeja", "Jasprit Bumrah", "Bhuvneshwar Kumar", "Yuzvendra Chahal", "Mohammed Shami"};
+string nz_player_names[11] = {"Kane Williamson", "Martin Guptill", "Devon Conway", "Glenn Phillips", "James Neesham", "Mitchell Santner", "Tim Southee", "Trent Boult", "Lockie Ferguson", "Ish Sodhi", "Tom Latham"};
+string wi_player_names[11] = {"Kieron Pollard", "Chris Gayle", "Nicholas Pooran", "Shimron Hetmyer", "Andre Russell", "Jason Holder", "Dwayne Bravo", "Sunil Narine", "Sheldon Cottrell", "Oshane Thomas", "Evin Lewis"};
+string afg_player_names[11] = {"Mohammad Nabi", "Rashid Khan", "Mujeeb Ur Rahman", "Hazratullah Zazai", "Rahmanullah Gurbaz", "Najibullah Zadran", "Gulbadin Naib", "Asghar Afghan", "Hamid Hassan", "Karim Janat", "Naveen-ul-Haq"};
+string sa_player_names[11] = {"Quinton de Kock", "Temba Bavuma", "Aiden Markram", "Rassie van der Dussen", "David Miller", "Dwaine Pretorius", "Kagiso Rabada", "Anrich Nortje", "Tabraiz Shamsi", "Lungi Ngidi", "Heinrich Klaasen"};
+string sri_player_names[11] = {"Kusal Perera", "Danushka Gunathilaka", "Avishka Fernando", "Dhananjaya de Silva", "Dasun Shanaka", "Wanindu Hasaranga", "Dushmantha Chameera", "Lahiru Kumara", "Nuwan Pradeep", "Kusal Mendis", "Isuru Udana"};
+string ban_player_names[11] = {"Tamim Iqbal", "Shakib Al Hasan", "Mushfiqur Rahim", "Mahmudullah", "Soumya Sarkar", "Liton Das", "Mustafizur Rahman", "Taskin Ahmed", "Mehidy Hasan", "Mohammad Saifuddin", "Afif Hossain"};
 
 int batORbowl;
+int target = 0;  // Store the target score
+bool user_won = false;  // Determine the winner
+int overs;
+int totalBalls;
 
 int comp_score[10];
 int user_score[10];
@@ -39,183 +47,244 @@ string comp_team[11];
 
 int main()
 {
-     srand(static_cast<unsigned>(time(0))); //cant include in function to ensure randomness
-    
-        display_menu();
-        waitForKeyPress();
-    
-    
+	srand(static_cast<unsigned>(time(0))); // Ensure randomness
+
+	while (true) {
+		display_menu();
+		waitForKeyPress();
+	}
+
+	return 0;
 }
 
+void display_menu() {
+	cout<<"\n";
+	system("clear");
+	cout << "============================================\n";
+	cout << " \033[7;33m              HAND CRICKET 2024        \033[0m   \n";
+	cout << "============================================\n";
+	cout << "1. PLAY 🏏\n";
+	cout << "2. INSTRUCTIONS 📜\n";
+	cout << "3. EXIT ❌\n";
+	cout << "============================================\n";
+	cout << "Choose an option to begin: ";
 
-void display_menu()                          //MENU
-{
-    cout << "HAND CRICKET 2024"
-         <<endl
-         <<endl
-         <<"1. PLAY\n"
-         <<"2. INSTRUCTIONS\n"
-         <<"3. EXIT\n"
-         <<endl
-         <<"Choose an option to begin: ";
+	int choice;
+	cin >> choice;
 
-         int choice;
-         cin>>choice;
+	switch(choice) {
+		case 1:
+			select_gametype(overs);
+			totalBalls = overs * 6;
+			select_user_team(user_team);
+			select_comp_team(comp_team);
+			toss(batORbowl);
+			if (batORbowl == 1) { 
+				player_turn(); 
+				computer_turn(); 
+			} else if(batORbowl==2){ 
+				computer_turn(); 
+				player_turn(); 
+			}
+			decide_winner();
+			break;
+		case 2:
+			instructions();
+			break;
+		case 3:
+			cout << "Exiting... Goodbye! 👋\n";
+			exit(0); // Exit the program
+		default:
+			cout << "Invalid choice! Please select a valid option. 🔴\n";
+	}
 
-         switch(choice)
-         {
-            case 1:
-                select_user_team( user_team); select_comp_team(comp_team);
-				void toss();
-                if(batORbowl ==1){player_turn(); computer_turn();}
-                if(batORbowl ==2){computer_turn();player_turn(); }
-                break;
-            case 2: instructions();
-            case 3:
-                 return;
-            default: 
-                cout<<"";
-         }
-       
-
+	// Ask to display the menu again or exit
+	char endChoice;
+	cout << "Do you want to display the menu again? (y/n): ";
+	cin >> endChoice;
+	if (endChoice == 'n' || endChoice == 'N') {
+		cout << "Exiting... Goodbye! 👋\n";
+		exit(0); // Exit the program
+	}
 }
 
-
-void toss(int &batORbowl) //it will return the toss to the play function
+void select_gametype(int &overs)
 {
-    
-    cout<<"Time for the toss!"
-        <<endl
-        <<"Press-->"<<endl<<"\t1. for Heads"<< endl<<"\t2 for tails "<<endl<<"Option: " ;//Head is 1 and tails is 0
+	system("clear");
+	cout<<"Select Game Mode\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n"
+		<<"\n"
+		<<"1. Blitz (quick 2 over match)\n"
+		<<"2. T 5 (5 overs)\n"
+		<<"3. Super Over\n"
+		<<"4. Custom\n"
+		<<"5. Go Back to Main Menu\n\n"
+		<<"Select your choice: ";
+	int choice;
+	cin >>choice;
 
-    int head_tails;
-    cin>>head_tails;
-
-    bool toss = toss_rand();  //randomly generate 1 or 0 and decide on that basis
-    if(toss)
-    {
-        cout<<"u won the toss!!"<<endl;
-        cout<<endl<<"Would you like to bat first or bowl first?"
-            <<endl<<"1. Bat"<<endl<<"2. Bowl"<<endl<<"Select an option: ";
-
-        int bat_bowl;   //toss won, u bowl first = 2
-        cin >> bat_bowl;
-
-      
-        
-    }
-    else if(!toss)
-    {
-        cout<<"opponent won the toss."<<endl;
-        bool comp_decide = toss_rand();
-        if(comp_decide){batORbowl= 2;}          //toss lost, computer  bats first
-        else if(!comp_decide){batORbowl =1;}    //toss lost, computer bowls first
-    }
-
-    
-
-
+	switch(choice)
+	{
+		case 1:
+			overs = 2;
+			break;
+		case 2:
+			overs = 5;
+			break;
+		case 3:
+			overs = 1;
+			break;
+		case 4:
+			system("clear");
+			cout<<"Overs: ";
+			cin>> overs;
+			break;
+		default:
+			loading();
+			display_menu();
+	}
 }
 
+void toss(int &batORbowl) {
+	system("clear");
+	cout << "Time for the toss!" << endl
+		 << "1. Heads" << endl << "2. Tails " << endl << "Option: ";
 
-void computer_turn()
-{
-    int player_score;
-   int wickets = 0;
-    int score=0;
-    int total_score = 0;
-    int comp_guess;
-    int i= 0;
-    int balls =0;
-    cout<<"Its your turn to bowl! \n";
-    do{
-        
+	int head_tails;
+	cin >> head_tails;
 
-      
-        
-        scoreboard( i,  user_team,  balls,  wickets,  score,  total_score);
-        do {cout<<endl<<"Select your option(1-6) : "; cin>>score;}while(score <1 || score>6);
-        int comp_guess = rand()%7;
-        
-         cout<<endl;
-        
-         cout<< "Computer selected score: "<< comp_guess; cout<<endl;
-
-        if( comp_guess == score)  //case for OUT
-        {   
-            cout<< "The umpire signals \"OUT\"\n";
-            comp_score[i] = player_score;
-            wickets++;
-            i++;
-            player_score = 0;
-
-            
-        }
-
-        else
-        {
-            player_score += score;
-            total_score += score;
-        }
-        scoreboard( i,  user_team,  balls,  wickets,  score,  total_score);
-    }while(wickets != 10);
-cout<<endl<<"All out!! Target is "<<total_score + 1<<endl;
+	bool toss = toss_rand();  //randomly generate 1 or 0 and decide on that basis
+	if(toss) {
+		cout << "You won the toss!!" << endl;
+		cout << endl << "Would you like to bat first or bowl first?"
+			 << endl << "1. Bat" << endl << "2. Bowl" << endl << "Select an option: ";
+		cin >> batORbowl;
+	} else {
+		cout << "Opponent won the toss." << endl;
+		bool comp_decide = toss_rand();
+		batORbowl = comp_decide ? 1 : 2;
+	}
 }
 
-void player_turn()
-{
-    int score;
-	int total_score = 0;
-	int wickets = 0;
-	
-	char arr[11] = { 'a','b','c' };
-	for (int i = 0;i < 11 ; i++) {
-		//2sec break code to e entered/
-		cout << arr[i] << " at batting" << endl;
+void computer_turn() {
+	int player_score = 0;
+	int wickets = 0, balls = 0, score = 0, total_score = 0, i = 0;
 
+	cout << "It's your turn to bowl! 🎳\n";
+
+	while (wickets != 10 && balls < totalBalls) {  // Limit according to overs selected
+		scoreboard(i, user_team, balls, wickets, score, total_score);
+
+		do {
+			cout << "\nSelect your option (1-6): ";
+			cin >> score;
+		} while (score < 1 || score > 6);
+
+		int comp_guess = rand() % 6 + 1;  // Random computer score (1-6)
+
+		cout << "Computer selected score: " << comp_guess << endl;
+
+		balls++;  // Increment balls every turn
+
+		if (comp_guess == score) {  // Case for OUT
+			cout << "The umpire signals \"OUT\"! ❌\n";
+			comp_score[i] = player_score;
+			wickets++;
+			i++;  // Next player
+			player_score = 0;  // Reset player score
+		} else {
+			player_score += comp_guess;
+			total_score += comp_guess;
+		}
+		scoreboard(i, user_team, balls, wickets, score, total_score);
+
+		if (target > 0 && total_score > target) {
+			cout << "\nComputer wins! 🏆\n";
+			return;
+		}
+	}
+
+	cout << "\nEND of INNINGS!!\n";
+	if (target == 0) {
+		target = total_score + 1;
+		cout << "TARGET is: " << target << " 🏏\n\n\n";
+	} else {
+		cout << "Computer's total score: " << total_score << " 🏏\n";
+		if (total_score < target && target > 0) {
+			user_won = true;
+		} else if(total_score > target && target > 0) {
+			user_won = true;
+		}
+	}
+}
+
+void player_turn() {
+	int score, random_no;
+	int total_score = 0, wickets = 0, balls = 0;
+
+	cout << "Your batting turn! 🏏\n";
+
+	for (int i = 0; i < 11 && wickets < 10 && balls < totalBalls; i++) {
+		cout << user_team[i] << " is batting... 🏃‍♂️\n";
 
 		while (true) {
-			int random_no = rand() % 7;
-			cout << "enter a score between 1 and 6:";
-			cin >> score;
-			if (score < 1 || score>6)
-				cout << "enter a number between 1 and 6" << endl;
-			if (score == random_no) {
-				score = 0;
-				cout << "out!" << endl;
+			random_no = rand() % 6 + 1;  // Random computer guess
+			do {
+				cout << "Enter a score between 1 and 6: ";
+				cin >> score;
+			} while (score < 1 || score > 6);
+
+			balls++;  // Increment balls
+
+			if (score == random_no) {  // Case for OUT
+				cout << "OUT! ❌\n";
+				user_score[i] = total_score;
 				wickets++;
-				break;
-			
-			}
-			else {
+				break;  // Move to the next player
+			} else {
 				total_score += score;
-				cout << "current score: " << total_score << endl;
+				cout << "Current score: " << total_score << " 🏏\n";
+			}
+
+			scoreboard(i, user_team, balls, wickets, score, total_score);
+
+			if (target > 0 && total_score > target) {
+				user_won = true;
+				return;
 			}
 		}
 	}
-	cout << "All out! Total score is: " << total_score << endl;
-	cout << "Target: " << total_score + 1 << endl;
 
+	cout << "\nEnd of INNINGS! Total score is: " << total_score << " 🏏\n";
+	if (target == 0) {
+		target = total_score + 1;
+		cout << "Target: " << target << endl;
+	} else {
+		if (total_score < target) {
+			user_won = false;
+		} else {
+			user_won = true;
+		}
+	}
 }
 
-void select_comp_team(string comp_team[11])
-{
-int choose;
-		do{
-			cout << "------------Select computer team------------\n";
-			cout << "1. Pakistan Cricket Team\n";
-			cout << "2. England Cricket Team\n";
-			cout << "3. Australian Cricket Team\n";
-			cout << "4. Indian Cricket Team\n";
-			cout << "5.New Zealand Cricket Team\n";
-			cout << "6.West Indies Cricket Team\n";
-			cout << "7.Afghanistan Cricket Team\n";
-			cout << "8.South African Cricket Team\n";
-			cout << "9.Srilanka Cricket Team \n";
-			cout << "10.Bangladesh Cricket Team \n";
-			cout << "Select an option\n";
-			cin >> choose;
-			switch (choose){
+void select_comp_team(string comp_team[11]) {
+	int choose;
+	do {
+		system("clear");
+		cout << "------------Select computer team------------\n";
+		cout << "1. Pakistan Cricket Team\n";
+		cout << "2. England Cricket Team\n";
+		cout << "3. Australian Cricket Team\n";
+		cout << "4. Indian Cricket Team\n";
+		cout << "5. New Zealand Cricket Team\n";
+		cout << "6. West Indies Cricket Team\n";
+		cout << "7. Afghanistan Cricket Team\n";
+		cout << "8. South African Cricket Team\n";
+		cout << "9. Srilanka Cricket Team \n";
+		cout << "10. Bangladesh Cricket Team \n\n";
+		cout << "Select an option: ";
+		cin >> choose;
+		switch (choose) {
 			case 1:
 				copy(comp_team, pak_player_names);
 				break;
@@ -249,27 +318,28 @@ int choose;
 			default:
 				cout << "Please select an appropriate option\n";
 				break;
-			}
-		} while (choose > 10 || choose < 1);
-	}
+		}
+	} while (choose > 10 || choose < 1);
+}
 
-void select_user_team(string user_team[11]){
-int choose;
-		do{
-			cout << "------------Select your team------------\n";
-			cout << "1. Pakistan Cricket Team\n";
-			cout << "2. England Cricket Team\n";
-			cout << "3. Australian Cricket Team\n";
-			cout << "4. Indian Cricket Team\n";
-			cout << "5.New Zealand Cricket Team\n";
-			cout << "6.West Indies Cricket Team\n";
-			cout << "7.Afghanistan Cricket Team\n";
-			cout << "8.South African Cricket Team\n";
-			cout << "9.Srilanka Cricket Team \n";
-			cout << "10.Bangladesh Cricket Team \n";
-			cout << "Select an option\n";
-			cin >> choose;
-			switch (choose){
+void select_user_team(string user_team[11]) {
+	int choose;
+	do {
+		system("clear");
+		cout << "------------Select your team------------\n";
+		cout << "1. Pakistan Cricket Team\n";
+		cout << "2. England Cricket Team\n";
+		cout << "3. Australian Cricket Team\n";
+		cout << "4. Indian Cricket Team\n";
+		cout << "5. New Zealand Cricket Team\n";
+		cout << "6. West Indies Cricket Team\n";
+		cout << "7. Afghanistan Cricket Team\n";
+		cout << "8. South African Cricket Team\n";
+		cout << "9. Srilanka Cricket Team \n";
+		cout << "10. Bangladesh Cricket Team \n\n";
+		cout << "Select an option: ";
+		cin >> choose;
+		switch (choose) {
 			case 1:
 				copy(user_team, pak_player_names);
 				break;
@@ -303,52 +373,62 @@ int choose;
 			default:
 				cout << "Please select an appropriate option\n";
 				break;
-			}
-		} while (choose > 10 || choose < 1);
-	}
+		}
+	} while (choose > 10 || choose < 1);
+}
 
+void scoreboard(int i, string pak_player_names[11], int balls, int wickets, int score, int totalscore) {
+	// Convert balls to overs
+	int overs = balls / 6;
+	int remaining_balls = balls % 6;
+	system("clear");
 
-
-void scoreboard(int i, string pak_player_names[11], int balls, int wickets, int score, int totalscore)
-{
-cout<<" -------SCOREBOARD------- "<< endl;
-cout <<"Player name: " << pak_player_names[i] << endl;
-cout<< "Balls played: " << balls << endl;
-cout<<"Balls : " <<balls << endl;
-cout<<"	Wickets: " <<wickets << endl;
-cout<<"Score: " <<score << endl;
-cout<<"Total score: " << totalscore << endl; 
-} 
-
-
-
-   
-
+	cout << "----------------- SCOREBOARD -----------------" << endl;
+	cout << "🏏 Player: " << pak_player_names[i] << endl;
+	cout << "Overs: " << overs << "." << remaining_balls << endl;
+	cout << "Wickets: " << wickets <<  endl;
+	cout << "Current Score: " << score  << endl;
+	cout << "Total Score: " << totalscore << endl;
+	cout << "--------------------------------------------" << endl;
+}
 
 void waitForKeyPress() {
-    cout << "Press any key to continue...\n";
-    system("read -n1"); // Waits for any key press
+	cout << "Press any key to continue...\n";
+	system("read -n1"); // Waits for any key press
 }
 
 void instructions() {
-    cout << "INSTRUCTIONS:\n\n";
-    cout << "1. This is a hand cricket game where you select scores (1-6).\n";
-    cout << "2. If your score matches the opponent's guess, the player is OUT.\n";
-    cout << "3. You and the computer take turns batting and bowling.\n";
-    cout << "4. The team with the highest score wins.\n";
+	cout << "INSTRUCTIONS:\n\n";
+	cout << "1. This is a hand cricket game where you select scores (1-6).\n";
+	cout << "2. If your score matches the opponent's guess, the player is OUT.\n";
+	cout << "3. You and the computer take turns batting and bowling.\n";
+	cout << "4. The team with the highest score wins.\n";
 }
 
-int toss_rand(){
-
-
-    // Generate a random number (0 or 1)
-    return  rand() % 2;
+int toss_rand() {
+	// Generate a random number (0 or 1)
+	return rand() % 2;
 }
 
-void copy(string x[11], string y[11])
-{
-    for (int i = 0; i < 11; i ++)
-    {
-        x[i] = y[i];
-    }
+void copy(string x[11], string y[11]) {
+	for (int i = 0; i < 11; i++) {
+		x[i] = y[i];
+	}
+}
+
+void decide_winner() {
+	if (user_won) {
+		cout << "Congratulations! You won the game! 🏆\n";
+	} else {
+		cout << "Computer wins the game! 🏆\n";
+	}
+}
+
+void loading(){
+cout << "Loading";
+for (int i = 0; i < 3; i++) {
+	cout << ".";
+	this_thread::sleep_for(chrono::milliseconds(500));
+	
+}
 }
