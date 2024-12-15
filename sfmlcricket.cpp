@@ -17,7 +17,7 @@ void toss(int &batORbowl, sf::RenderWindow &window);
 void select_user_team(string user_team[11], sf::RenderWindow &window);
 void select_comp_team(string comp_team[11], sf::RenderWindow &window);
 void scoreboard(int i, string pak_player_names[11], int balls, int wickets, int score, int totalscore, sf::RenderWindow &window);
-void instructions(sf::RenderWindow &window);
+void show_instructions(sf::RenderWindow &window);
 void copy(string x[11], string y[11]);
 void player_turn(sf::RenderWindow &window);
 void computer_turn(sf::RenderWindow &window);
@@ -112,7 +112,7 @@ void display_menu(sf::RenderWindow &window) {
                 }
                 decide_winner(window);
             } else if (event.key.code == sf::Keyboard::Num2) {
-                instructions(window);
+                show_instructions(window);
             } else if (event.key.code == sf::Keyboard::Num3) {
                 window.close();
             }
@@ -458,7 +458,7 @@ void player_turn(sf::RenderWindow &window) {
 
             // Display scoreboard
             window.clear();
-            scoreboard(i, user_team, balls, wickets, score, total_score);
+            scoreboard(i, user_team, balls, wickets, score, total_score, window);
             window.display();
 
             if (target > 0 && total_score > target) {
@@ -758,7 +758,7 @@ void waitForKeyPress() {
     system("read -n1"); // Waits for any key press
 }
 
-void instructions(sf::RenderWindow &window) {
+void show_instructions(sf::RenderWindow &window) {
     window.clear();
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
