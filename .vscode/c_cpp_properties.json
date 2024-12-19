@@ -4,13 +4,21 @@
       "name": "macos-clang-x64",
       "includePath": [
         "${workspaceFolder}/**",
+        "/usr/local/include",
         "/usr/local/Cellar/sfml/2.6.2/include"
       ],
+      "defines": [],
       "compilerPath": "/usr/bin/clang++",
       "cStandard": "c17",
       "cppStandard": "c++17",
       "intelliSenseMode": "macos-clang-x64",
-      "compilerArgs": []
+      "compilerArgs": [
+        "-std=c++17",
+        "-stdlib=libc++",
+        "-Wall",
+        "-Wextra",
+        "-Werror"
+      ]
     }
   ],
   "version": 4

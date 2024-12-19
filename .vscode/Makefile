@@ -4,7 +4,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 -I$(SFML_PATH)/include
 LDFLAGS = -L$(SFML_PATH)/lib -lsfml-graphics -lsfml-window -lsfml-system
 
-SRC = practice.cpp
+SRC = sfmlcricket.cpp
 TARGET = sfml_app
 
 all:

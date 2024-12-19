@@ -5,7 +5,7 @@
       "name": "Run SFML Program",
       "type": "cppdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/bin/practice",
+      "program": "${workspaceFolder}/sfmlcricket",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
